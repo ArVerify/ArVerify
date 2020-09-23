@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="flex items-stretch">
-      <div class="text-6xl font-bold">ArVerify.</div>
-      <div class="self-center text-center">Logout</div>
+      <div class="w-1/2 text-6xl font-bold">ArVerify.</div>
+      <div class="w-1/2 self-center text-right">Logout</div>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-4">
     <navigation></navigation>
     <wallet-information></wallet-information>
     <h-bar></h-bar>
