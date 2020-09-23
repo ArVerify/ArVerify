@@ -1,7 +1,6 @@
 <template>
   <div>
     <navigation></navigation>
-    <h-bar></h-bar>
     <wallet-information></wallet-information>
     <h-bar></h-bar>
     <status></status>
