@@ -16,7 +16,7 @@
 
 <script>
     import StatusCircle from "./StatusCircle";
-    import {checkVerified} from "../plugins/arverify";
+    import {checkTipped, checkVerified} from "../plugins/arverify";
     import {getCurrentAddress} from "../plugins/vue-arweave";
 
     export default {
@@ -60,6 +60,7 @@
         async mounted() {
             let address = await getCurrentAddress()
             this.verified = await checkVerified(address)
+            this.tipped = await checkTipped(address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
         }
     }
 </script>
