@@ -16,7 +16,7 @@
 
 <script>
     import StatusCircle from "./StatusCircle";
-    import {checkTipped, checkVerified} from "../plugins/arverify";
+    import {checkTipped, checkVerified, verifyAddress} from "../plugins/arverify";
     import {getCurrentAddress} from "../plugins/vue-arweave";
 
     export default {
@@ -26,6 +26,7 @@
             return {
                 verified: undefined,
                 tipped: undefined,
+                address: undefined,
                 status: {
                     unverified: {
                         color: "red",
@@ -46,8 +47,9 @@
             }
         },
         methods: {
-            handleClick() {
+            async handleClick() {
                 this.tipped = true
+                let url = await verifyAddress(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
             }
         },
         computed: {
@@ -58,9 +60,9 @@
             }
         },
         async mounted() {
-            let address = await getCurrentAddress()
-            this.verified = await checkVerified(address)
-            this.tipped = await checkTipped(address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+            this.address = await getCurrentAddress()
+            this.verified = await checkVerified(this.address)
+            this.tipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
         }
     }
 </script>

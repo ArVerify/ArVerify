@@ -16,6 +16,7 @@ async function tipAuthNode(authNodeAddress) {
     await $ar.transactions.sign(transaction, key);
     await $ar.transactions.post(transaction);
 
+    return transaction
 
 }
 
@@ -32,23 +33,39 @@ function requestURI(address, authNodeURL) {
     })
 }
 
-export function verifyAddress(address, authNodeAddress) {
+export async function verifyAddress(address, authNodeAddress) {
     //check if tip is stored in localStorage
     let tipped = !!localStorage.getItem("tipped")
     if (!tipped) {
         //check if tipped previously
-        tipped = checkTipped(address, authNodeAddress)
+        console.log("Checking Arweave for tip")
+        tipped = await checkTipped(address, authNodeAddress)
+        console.log("Found tip: " + tipped)
 
+        let tx;
         if (!tipped) {
-            let tx = tipAuthNode(authNodeAddress)
-            tipped = true
+            try {
+                tx = await tipAuthNode(authNodeAddress)
+                console.log(tx)
+            } catch (e) {
+                console.log(e)
+                throw Error("Error while tipping")
+            }
         }
-
         //if tipped set to localStorage
         localStorage.setItem("tipped", tx.id)
     }
 
-    return requestURI(address)
+    let txId = localStorage.getItem("tipped")
+    let status = await $ar.transactions.getStatus(txId)
+
+    if (status.status !== 200) {
+        console.log(status)
+        throw Error("Tipping was not successful")
+    }
+
+
+    return requestURI(address, "")
 }
 
 export function checkTipped(userAddress, authNodeAddress) {
@@ -82,6 +99,7 @@ export function checkTipped(userAddress, authNodeAddress) {
                                 `
         }
     }).then((result) => {
+        console.log("TipTX: " + result.data)
         console.log(result.data)
         let edges = result.data.data.transactions.edges
         return edges.length > 0
