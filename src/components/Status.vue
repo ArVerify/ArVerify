@@ -4,7 +4,11 @@
     <div :class="`text-center font-bold text-2xl text-${mode.color}-700`">{{mode.statusText}}</div>
     <div>
       <div class="flex justify-center">
-        <status-circle :color="mode.color" :button-html="mode.buttonHtml"></status-circle>
+        <status-circle
+            :color="mode.color"
+            :button-html="mode.buttonHtml"
+            :verified="verified"
+            @test="handleClick"/>
       </div>
     </div>
   </div>
@@ -39,6 +43,11 @@
                         buttonHtml: "You are verified"
                     }
                 }
+            }
+        },
+        methods: {
+            handleClick() {
+                console.log("TEST")
             }
         },
         computed: {
