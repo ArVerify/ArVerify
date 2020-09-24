@@ -2,14 +2,21 @@
   <div>
     <div class="flex items-stretch">
       <div class="w-1/2 text-6xl font-bold">ArVerify.</div>
-      <div class="w-1/2 self-center text-right">Logout</div>
+      <div class="w-1/2 self-center text-right">
+        <button @click="logout">Logout</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
     export default {
-        name: "Navigation"
+        name: "Navigation",
+        methods:{
+            logout(){
+                localStorage.removeItem("jwk")
+            }
+        }
     }
 </script>
 
