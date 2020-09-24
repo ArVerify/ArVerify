@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <navigation></navigation>
+    <navigation :logged-in="loggedIn"></navigation>
     <div v-if="!loggedIn">
       <login></login>
     </div>

@@ -3,7 +3,7 @@
     <div class="flex items-stretch">
       <div class="w-1/2 text-6xl font-bold">ArVerify.</div>
       <div class="w-1/2 self-center text-right">
-        <button @click="logout">Logout</button>
+        <button @click="logout" v-if="loggedIn">Logout</button>
       </div>
     </div>
   </div>
@@ -12,8 +12,9 @@
 <script>
     export default {
         name: "Navigation",
-        methods:{
-            logout(){
+        props: ["loggedIn"],
+        methods: {
+            logout() {
                 localStorage.removeItem("jwk")
                 location.reload()
             }
