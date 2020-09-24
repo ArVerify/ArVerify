@@ -47,7 +47,7 @@
         },
         methods: {
             handleClick() {
-                console.log("TEST")
+                this.tipped = true
             }
         },
         computed: {
