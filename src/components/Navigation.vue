@@ -15,6 +15,7 @@
         methods:{
             logout(){
                 localStorage.removeItem("jwk")
+                location.reload()
             }
         }
     }

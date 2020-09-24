@@ -1,5 +1,6 @@
 <template>
   <div class="p-4">
+    <login></login>
     <navigation></navigation>
     <wallet-information></wallet-information>
     <h-bar></h-bar>
@@ -13,10 +14,11 @@
     import WalletInformation from "../components/WalletInformation";
     import Status from "../components/Status";
     import HBar from "../components/HBar";
+    import Login from "../components/Login";
 
     export default {
         name: "Home",
-        components: {HBar, Status, WalletInformation, Navigation}
+        components: {Login, HBar, Status, WalletInformation, Navigation}
     }
 </script>
 
