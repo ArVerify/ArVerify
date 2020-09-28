@@ -32,9 +32,8 @@ export async function requestURI(address, authNodeURL) {
 
 export async function verifyAddress(address, authNodeAddress) {
     //check if tip is stored in localStorage
-    let tipped = !!localStorage.getItem("tipped")
-    if (!tipped) {
-        let tx;
+    let tx = localStorage.getItem("tipped")
+    if (!tx) {
         //check if tipped previously
         console.log("Checking Arweave for tip")
         tx = await checkTipped(address, authNodeAddress)
@@ -53,8 +52,7 @@ export async function verifyAddress(address, authNodeAddress) {
         localStorage.setItem("tipped", tx.id)
     }
 
-    let txId = localStorage.getItem("tipped")
-    let status = await $ar.transactions.getStatus(txId)
+    let status = await $ar.transactions.getStatus(tx)
 
     if (status.status === 410) {
         localStorage.removeItem("tipped")
@@ -65,8 +63,7 @@ export async function verifyAddress(address, authNodeAddress) {
         throw Error("Tipping was not successful")
     }
 
-
-    return txId
+    return tx
 }
 
 export async function checkTipped(userAddress, authNodeAddress) {
