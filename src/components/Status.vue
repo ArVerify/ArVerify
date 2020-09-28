@@ -42,18 +42,29 @@
                         color: "green",
                         statusText: "verified",
                         buttonHtml: "You are verified"
+                    },
+                    errored: {
+                        color: "red",
+                        statusText: "Verification failed",
+                        buttonHtml: "An error occurred"
                     }
                 }
             }
         },
         methods: {
             async handleClick() {
-                this.tipped = true
-                let url = await verifyAddress(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                try {
+                    this.tipped = true
+                    let url = await verifyAddress(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                } catch (e) {
+                    this.tipped = false
+                    this.errored = true
+                }
             }
         },
         computed: {
             mode() {
+                if (this.errored) return this.status.errored
                 if (this.verified) return this.status.verified
                 if (this.tipped) return this.status.inProgress
                 return this.status.unverified

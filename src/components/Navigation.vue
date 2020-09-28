@@ -15,7 +15,7 @@
         props: ["loggedIn"],
         methods: {
             logout() {
-                localStorage.removeItem("jwk")
+                localStorage.clear()
                 location.reload()
             }
         }
