@@ -8,7 +8,7 @@
             :color="mode.color"
             :button-html="mode.buttonHtml"
             :verified="verified"
-            @test="handleClick"/>
+            @clicked="handleClick"/>
       </div>
     </div>
   </div>
