@@ -16,7 +16,7 @@
 
 <script>
     import StatusCircle from "./StatusCircle";
-    import {checkTipped, checkVerified, verifyAddress} from "../plugins/arverify";
+    import {checkTipped, checkVerified, verifyAddress, requestURI} from "../plugins/arverify";
     import {getCurrentAddress} from "../plugins/vue-arweave";
 
     export default {
@@ -24,6 +24,9 @@
         components: {StatusCircle},
         data() {
             return {
+                errored: undefined,
+                waitingForTip: undefined,
+                waitingForSignIn: undefined,
                 verified: undefined,
                 tipped: undefined,
                 address: undefined,
@@ -32,6 +35,16 @@
                         color: "red",
                         statusText: "unverified",
                         buttonHtml: "Click here to verify"
+                    },
+                    waitingForTip: {
+                        color: "orange",
+                        statusText: "verification in progess",
+                        buttonHtml: "Waiting for tip to complete"
+                    },
+                    waitingForSignIn: {
+                        color: "orange",
+                        statusText: "verification in progess",
+                        buttonHtml: "Click here to sign in"
                     },
                     inProgress: {
                         color: "orange",
@@ -54,9 +67,12 @@
         methods: {
             async handleClick() {
                 try {
-                    this.tipped = true
-                    let url = await verifyAddress(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                    this.waitingForTip = true
+                    this.waitingForSignIn = await verifyAddress(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                    let url = await requestURI(this.address, "https://6660c0c3c602.ngrok.io")
+                    window.location = url
                 } catch (e) {
+                    this.waitingForTip = false
                     this.tipped = false
                     this.errored = true
                 }
@@ -66,7 +82,8 @@
             mode() {
                 if (this.errored) return this.status.errored
                 if (this.verified) return this.status.verified
-                if (this.tipped) return this.status.inProgress
+                if (this.tipped) return this.status.waitingForSignIn
+                if (this.waitingForTip) return this.status.waitingForTip
                 return this.status.unverified
             }
         },

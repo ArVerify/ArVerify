@@ -20,10 +20,9 @@ async function tipAuthNode(authNodeAddress) {
 
 }
 
-async function requestURI(address, authNodeURL) {
+export async function requestURI(address, authNodeURL) {
     try {
         let response = await axios.get(authNodeURL + "/verify", {params: {address: address}})
-        console.log(response)
         return response.data.uri
     } catch (error) {
         console.log(error.response.data)
@@ -57,7 +56,7 @@ export async function verifyAddress(address, authNodeAddress) {
     let txId = localStorage.getItem("tipped")
     let status = await $ar.transactions.getStatus(txId)
 
-    if (status.status === 410){
+    if (status.status === 410) {
         localStorage.removeItem("tipped")
         throw Error("Tipping was not successful")
     }
@@ -67,7 +66,7 @@ export async function verifyAddress(address, authNodeAddress) {
     }
 
 
-    return requestURI(address, "https://f6d1628fc4d5.ngrok.io")
+    return txId
 }
 
 export function checkTipped(userAddress, authNodeAddress) {
