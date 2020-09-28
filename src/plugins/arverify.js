@@ -34,13 +34,13 @@ export async function verifyAddress(address, authNodeAddress) {
     //check if tip is stored in localStorage
     let tipped = !!localStorage.getItem("tipped")
     if (!tipped) {
+        let tx;
         //check if tipped previously
         console.log("Checking Arweave for tip")
-        tipped = await checkTipped(address, authNodeAddress)
-        console.log("Found tip: " + tipped)
+        tx = await checkTipped(address, authNodeAddress)
+        console.log("Found tip: " + tx)
 
-        let tx;
-        if (!tipped) {
+        if (!tx) {
             try {
                 tx = await tipAuthNode(authNodeAddress)
                 console.log(tx)
@@ -69,16 +69,17 @@ export async function verifyAddress(address, authNodeAddress) {
     return txId
 }
 
-export function checkTipped(userAddress, authNodeAddress) {
-    return axios({
-        url: 'https://arweave.dev/graphql',
-        method: 'post',
-        data: {
-            variables: {
-                owner: userAddress,
-                recipient: authNodeAddress
-            },
-            query: `
+export async function checkTipped(userAddress, authNodeAddress) {
+    try {
+        let response = await axios({
+            url: 'https://arweave.dev/graphql',
+            method: 'post',
+            data: {
+                variables: {
+                    owner: userAddress,
+                    recipient: authNodeAddress
+                },
+                query: `
                                 query transactions($owner: String!, $recipient: String!) {
                                   transactions(
                                     owners: [$owner]
@@ -98,13 +99,17 @@ export function checkTipped(userAddress, authNodeAddress) {
                                   }
                                 }
                                 `
-        }
-    }).then((result) => {
-        console.log("TipTX: " + result.data)
-        console.log(result.data)
-        let edges = result.data.data.transactions.edges
-        return edges.length > 0
-    });
+            }
+        })
+
+        console.log("TipTX: " + response.data)
+        console.log(response.data)
+        let edges = response.data.data.transactions.edges
+        return edges[0].node.id
+    } catch (e) {
+        console.log(e)
+        throw Error("No Tip Found")
+    }
 
 }
 
