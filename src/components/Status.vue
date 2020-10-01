@@ -24,6 +24,7 @@
         components: {StatusCircle},
         data() {
             return {
+                inProgress: undefined,
                 errored: undefined,
                 waitingForTip: undefined,
                 waitingForSignIn: undefined,
@@ -65,11 +66,11 @@
             }
         },
         methods: {
-            async waitUntilTxProcessed(transaction) {
+            async waitUntilTxProcessed(transactionId) {
                 return await new Promise(resolve => {
                     const interval = setInterval( () => {
                         console.log("Waiting to be completed")
-                        $ar.transactions.getStatus(transaction.id).then(status => {
+                        $ar.transactions.getStatus(transactionId).then(status => {
                           console.log(status.status)
                             let complete = status.status === 200
                             console.log(status.status + " "+ complete)
@@ -83,16 +84,31 @@
             },
             async verify() {
                 let verified = await checkVerified(this.address)
-                //if (!verified) {
+                if(this.$route.query.txId){
+                    console.log(this.$route.query.txId)
+                    this.inProgress = true
+                    await this.waitUntilTxProcessed(this.$route.query.txId)
+                    this.inProgress = false
+                }else {
                     this.waitingForTip = true
                     let alreadyTipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
                     if (!alreadyTipped) {
                         let transaction = await tipAuthNode("s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
-                        await this.waitUntilTxProcessed(transaction)
+                        await this.waitUntilTxProcessed(transaction.id)
                     }
                     console.log(alreadyTipped)
                     this.waitingForTip = false
+                    this.tipped = true
+                    let url = await requestURI(this.address, "https://afc0b97f16fc.ngrok.io")
+                    console.log(url)
+                    window.location = url
+                }
+                //if (!verified) {
+
                 //}
+
+                verified = await checkVerified(this.address)
+                this.verified = verified
             },
             async handleClick() {
                 try {
@@ -113,6 +129,7 @@
                 if (this.verified) return this.status.verified
                 if (this.tipped) return this.status.waitingForSignIn
                 if (this.waitingForTip) return this.status.waitingForTip
+                if (this.inProgress) return this.status.inProgress
                 return this.status.unverified
             }
         },
