@@ -88,6 +88,7 @@ export async function checkTipped(userAddress, authNodeAddress) {
                                   ) {
                                     edges {
                                       node {
+                                        id
                                         quantity {
                                           ar
                                         }
