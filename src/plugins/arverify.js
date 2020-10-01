@@ -1,7 +1,7 @@
 import $ar from "./vue-arweave";
 
 
-async function tipAuthNode(authNodeAddress) {
+export async function tipAuthNode(authNodeAddress) {
     let fee = '0.0001'
     let key = JSON.parse(localStorage.getItem("jwk"))
 

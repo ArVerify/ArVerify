@@ -16,8 +16,8 @@
 
 <script>
     import StatusCircle from "./StatusCircle";
-    import {checkTipped, checkVerified, verifyAddress, requestURI} from "../plugins/arverify";
-    import {getCurrentAddress} from "../plugins/vue-arweave";
+    import {checkTipped, checkVerified, verifyAddress, requestURI, tipAuthNode} from "../plugins/arverify";
+    import $ar, {getCurrentAddress} from "../plugins/vue-arweave";
 
     export default {
         name: "Status",
@@ -65,6 +65,29 @@
             }
         },
         methods: {
+            async waitUntil(condition) {
+                return await new Promise(resolve => {
+                    const interval = setInterval(() => {
+                        console.log("Waiting to be completed")
+                        if (condition) {
+                            resolve('foo');
+                            clearInterval(interval);
+                        }
+                    }, 1000);
+                });
+            },
+            async verify() {
+                let verified = await checkVerified(this.address)
+                if (!verified) {
+                    this.waitingForTip = true
+                    let alreadyTipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                    if (!alreadyTipped) {
+                        let transaction = await tipAuthNode("s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                        await this.waitUntil(await $ar.transactions.getStatus(transaction).status === 200)
+                    }
+                    this.waitingForTip = false
+                }
+            },
             async handleClick() {
                 try {
                     this.waitingForTip = true
