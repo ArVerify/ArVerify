@@ -112,18 +112,6 @@
 
                 verified = await checkVerified(this.address)
                 this.verified = verified
-            },
-            async handleClick() {
-                try {
-                    this.waitingForTip = true
-                    this.waitingForSignIn = await verifyAddress(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
-                    let url = await requestURI(this.address, "https://6660c0c3c602.ngrok.io")
-                    window.location = url
-                } catch (e) {
-                    this.waitingForTip = false
-                    this.tipped = false
-                    this.errored = true
-                }
             }
         },
         computed: {
