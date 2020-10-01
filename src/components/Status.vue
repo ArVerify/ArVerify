@@ -68,18 +68,21 @@
         methods: {
             async waitUntilTxProcessed(transactionId) {
                 return await new Promise(resolve => {
-                    const interval = setInterval(() => {
-                        console.log("Waiting to be completed")
-                        $ar.transactions.getStatus(transactionId).then(response => {
-                            console.log(response.status)
-                            let complete = response.status === 200
-                            console.log(response.status + " " + complete)
-                            if (complete) {
-                                resolve('foo');
-                                clearInterval(interval);
-                            }
-                        })
-                    }, 5000);
+                    $ar.transactions.getStatus(transactionId).then(response => {
+                        if (response.status === 200) {
+                            resolve('foo');
+                        } else {
+                            const interval = setInterval(() => {
+                                console.log("Waiting for " + transactionId + "to be completed")
+                                $ar.transactions.getStatus(transactionId).then(response => {
+                                    if (response.status === 200) {
+                                        resolve('foo');
+                                        clearInterval(interval);
+                                    }
+                                })
+                            }, 5000);
+                        }
+                    })
                 });
             },
             async verify() {
