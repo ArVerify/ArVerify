@@ -68,12 +68,12 @@
         methods: {
             async waitUntilTxProcessed(transactionId) {
                 return await new Promise(resolve => {
-                    const interval = setInterval( () => {
+                    const interval = setInterval(() => {
                         console.log("Waiting to be completed")
-                        $ar.transactions.getStatus(transactionId).then(status => {
-                          console.log(status.status)
-                            let complete = status.status === 200
-                            console.log(status.status + " "+ complete)
+                        $ar.transactions.getStatus(transactionId).then(response => {
+                            console.log(response.status)
+                            let complete = response.status === 200
+                            console.log(response.status + " " + complete)
                             if (complete) {
                                 resolve('foo');
                                 clearInterval(interval);
@@ -83,29 +83,29 @@
                 });
             },
             async verify() {
-                let verified = await checkVerified(this.address)
-                if(this.$route.query.txId){
+                let verified;
+                if (this.$route.query.txId) {
                     console.log(this.$route.query.txId)
                     this.inProgress = true
                     await this.waitUntilTxProcessed(this.$route.query.txId)
                     this.inProgress = false
-                }else {
-                    this.waitingForTip = true
-                    let alreadyTipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
-                    if (!alreadyTipped) {
-                        let transaction = await tipAuthNode("s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
-                        await this.waitUntilTxProcessed(transaction.id)
+                } else {
+                    let verified = await checkVerified(this.address)
+                    if (!verified) {
+                        this.waitingForTip = true
+                        let alreadyTipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                        if (!alreadyTipped) {
+                            let transaction = await tipAuthNode("s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+                            await this.waitUntilTxProcessed(transaction.id)
+                        }
+                        console.log(alreadyTipped)
+                        this.waitingForTip = false
+                        this.tipped = true
+                        let url = await requestURI(this.address, "https://afc0b97f16fc.ngrok.io")
+                        console.log(url)
+                        window.location = url
                     }
-                    console.log(alreadyTipped)
-                    this.waitingForTip = false
-                    this.tipped = true
-                    let url = await requestURI(this.address, "https://afc0b97f16fc.ngrok.io")
-                    console.log(url)
-                    window.location = url
                 }
-                //if (!verified) {
-
-                //}
 
                 verified = await checkVerified(this.address)
                 this.verified = verified
