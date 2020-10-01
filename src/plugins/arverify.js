@@ -143,7 +143,6 @@ export function checkVerified(address) {
                 `
         }
     }).then((result) => {
-        console.log(result.data)
         let edges = result.data.data.transactions.edges
         return edges.length > 0
     });

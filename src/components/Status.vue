@@ -8,7 +8,7 @@
             :color="mode.color"
             :button-html="mode.buttonHtml"
             :verified="verified"
-            @clicked="handleClick"/>
+            @clicked="verify"/>
       </div>
     </div>
   </div>
@@ -65,28 +65,34 @@
             }
         },
         methods: {
-            async waitUntil(condition) {
+            async waitUntilTxProcessed(transaction) {
                 return await new Promise(resolve => {
-                    const interval = setInterval(() => {
+                    const interval = setInterval( () => {
                         console.log("Waiting to be completed")
-                        if (condition) {
-                            resolve('foo');
-                            clearInterval(interval);
-                        }
-                    }, 1000);
+                        $ar.transactions.getStatus(transaction.id).then(status => {
+                          console.log(status.status)
+                            let complete = status.status === 200
+                            console.log(status.status + " "+ complete)
+                            if (complete) {
+                                resolve('foo');
+                                clearInterval(interval);
+                            }
+                        })
+                    }, 5000);
                 });
             },
             async verify() {
                 let verified = await checkVerified(this.address)
-                if (!verified) {
+                //if (!verified) {
                     this.waitingForTip = true
                     let alreadyTipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
                     if (!alreadyTipped) {
                         let transaction = await tipAuthNode("s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
-                        await this.waitUntil(await $ar.transactions.getStatus(transaction).status === 200)
+                        await this.waitUntilTxProcessed(transaction)
                     }
+                    console.log(alreadyTipped)
                     this.waitingForTip = false
-                }
+                //}
             },
             async handleClick() {
                 try {
@@ -112,8 +118,8 @@
         },
         async mounted() {
             this.address = await getCurrentAddress()
-            this.verified = await checkVerified(this.address)
-            this.tipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+            //this.verified = await checkVerified(this.address)
+            //this.tipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
         }
     }
 </script>
