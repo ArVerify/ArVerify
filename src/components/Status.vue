@@ -104,7 +104,7 @@
                         console.log(alreadyTipped)
                         this.waitingForTip = false
                         this.tipped = true
-                        let url = await requestURI(this.address, "https://afc0b97f16fc.ngrok.io")
+                        let url = await requestURI(this.address, "https://9e58881ea119.ngrok.io")
                         console.log(url)
                         window.location = url
                     }
@@ -126,8 +126,8 @@
         },
         async mounted() {
             this.address = await getCurrentAddress()
-            //this.verified = await checkVerified(this.address)
-            //this.tipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
+            this.verified = await checkVerified(this.address)
+            this.tipped = await checkTipped(this.address, "s-hGrOFm1YysWGC3wXkNaFVpyrjdinVpRKiVnhbo2so")
         }
     }
 </script>
